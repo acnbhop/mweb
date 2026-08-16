@@ -1,6 +1,10 @@
 import './style.css';
 import { Renderer } from './renderer.ts';
 
+/**
+ * Initializes the engine.
+ * @returns void
+ */
 async function initEngine() {
   const app = document.getElementById('app');
 
@@ -30,6 +34,7 @@ async function initEngine() {
   requestAnimationFrame(frame);
 }
 
+// Entry point
 initEngine().catch((error) => {
   console.error('[initEngine] An error occurred during initialization:', error);
-})
+});
