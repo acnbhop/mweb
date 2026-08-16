@@ -1,3 +1,9 @@
+//=========== Copyright Grant Abernathy, All rights reserved. ================//
+//
+// Purpose:
+//
+//============================================================================//
+
 @vertex
 fn vs_main(@builtin(vertex_index) VertexIndex : u32) -> @builtin(position) vec4<f32> {
   var pos = array<vec2<f32>, 3>(

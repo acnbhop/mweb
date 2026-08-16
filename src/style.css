@@ -1,3 +1,9 @@
+/*=========== Copyright Grant Abernathy, All rights reserved. ================*/
+/*                                                                            */
+/* Purpose: Global styles for the application.                                */
+/*                                                                            */
+/*============================================================================*/
+
 :root {
   font-family: system-ui, -apple-system, sans-serif;
   color-scheme: dark;
