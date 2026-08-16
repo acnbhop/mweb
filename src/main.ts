@@ -1,28 +1,35 @@
 import './style.css';
+import { Renderer } from './renderer.ts';
 
-async function initWebGPU() {
+async function initEngine() {
   const app = document.getElementById('app');
 
   if (!app) {
-    console.error('App element not found.');
+    console.error('[initEngine] Failed to find app element.');
     return;
   }
 
-  if (!navigator.gpu) {
-    console.error('WebGPU not supported on this browser.');
+  const canvas = document.createElement('canvas');
+  canvas.width = 800;
+  canvas.height = 600;
+  app.appendChild(canvas);
+
+  const renderer = new Renderer(canvas);
+  const isInitialized = await renderer.initialize();
+
+  if (!isInitialized) {
+    console.error('[initEngine] Failed to initialize the renderer.');
     return;
   }
-
-  const adapter = await navigator.gpu.requestAdapter();
-
-  if (!adapter) {
-    console.error('Failed to get GPU adapter. This means that WebGPU is supported, however, no suitable GPU hardware was found.');
-    return;
+  
+  function frame() {
+    renderer.draw();
+    requestAnimationFrame(frame);
   }
 
-  console.log("WebGPU initialized successfully.");
+  requestAnimationFrame(frame);
 }
 
-initWebGPU().catch((error) => {
-  console.error("WebGPU Initialization failed:", error);
-});
+initEngine().catch((error) => {
+  console.error('[initEngine] An error occurred during initialization:', error);
+})
