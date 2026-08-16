@@ -1,3 +1,9 @@
+//=========== Copyright Grant Abernathy, All rights reserved. ================//
+//
+// Purpose: The entry point for the engine.
+//
+//============================================================================//
+
 import './style.css';
 import { Renderer } from './renderer.ts';
 
@@ -5,7 +11,8 @@ import { Renderer } from './renderer.ts';
  * Initializes the engine.
  * @returns void
  */
-async function initEngine() {
+async function initEngine()
+{
   const app = document.getElementById('app');
 
   if (!app) {
@@ -25,8 +32,9 @@ async function initEngine() {
     console.error('[initEngine] Failed to initialize the renderer.');
     return;
   }
-  
-  function frame() {
+
+  function frame()
+  {
     renderer.draw();
     requestAnimationFrame(frame);
   }
@@ -35,6 +43,7 @@ async function initEngine() {
 }
 
 // Entry point
-initEngine().catch((error) => {
+initEngine().catch((error) =>
+{
   console.error('[initEngine] An error occurred during initialization:', error);
 });

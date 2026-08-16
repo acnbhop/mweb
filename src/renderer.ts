@@ -1,9 +1,16 @@
+//=========== Copyright Grant Abernathy, All rights reserved. ================//
+//
+// Purpose: Renderer for mangaging the rendering pipeline in the engine.
+//
+//============================================================================//
+
 import { ShaderSystem, ShaderProgram } from './shadersystem';
 
 /**
  * Renderer class.
  */
-export class Renderer {
+export class Renderer
+{
   private canvas: HTMLCanvasElement;
   private adapter!: GPUAdapter;
   private device!: GPUDevice;
@@ -17,7 +24,8 @@ export class Renderer {
    * Renderer constructor, initializes the renderer with a canvas element.
    * @param canvas The HTML canvas element where the rendering will take place.
    */
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement)
+  {
     this.canvas = canvas;
   }
 
@@ -25,7 +33,8 @@ export class Renderer {
    * Initializes the WebGPU renderer by requesting an adapter and device, and configuring the canvas context.
    * @returns A promise that resolves to true if the renderer is initialized successfully, otherwise false.
    */
-  public async initialize(): Promise<boolean> {
+  public async initialize(): Promise<boolean>
+  {
     if (!navigator.gpu) {
       console.error('[Renderer.initialize] WebGPU not supported on this browser.');
       return false;
@@ -71,7 +80,7 @@ export class Renderer {
       urlPath: '/shaders/test.wgsl',
       vertexEntryPoint: 'vs_main',
       fragmentEntryPoint: 'fs_main',
-    })
+    });
 
     if (!program) {
       console.error('[Renderer.initialize] Failed to load the test shader program.');
@@ -89,7 +98,8 @@ export class Renderer {
    * Draws a frame using the WebGPU device and context. If the device or context is not initialized, logs an error and returns early.
    * @returns void
    */
-  public draw(): void {
+  public draw(): void
+  {
     if (!this.device || !this.context) {
       // What is specifically missing?
       var deviceMissing = false;

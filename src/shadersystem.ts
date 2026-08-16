@@ -1,7 +1,14 @@
+//=========== Copyright Grant Abernathy, All rights reserved. ================//
+//
+// Purpose: ShaderSystem for managing shader modules in the engine.
+//
+//============================================================================//
+
 /**
  * Interface that describes the properties of a shader.
  */
-export interface ShaderDescriptor {
+export interface ShaderDescriptor
+{
   name: string;
   urlPath: string;
   vertexEntryPoint?: string;
@@ -12,7 +19,8 @@ export interface ShaderDescriptor {
 /**
  * Interface that represents the state of a rendering pipeline.
  */
-export interface PipelineState {
+export interface PipelineState
+{
   format: GPUTextureFormat;
   topology?: GPUPrimitiveTopology;
   depthFormat?: GPUTextureFormat;
@@ -22,7 +30,8 @@ export interface PipelineState {
 /**
  * ShaderProgram class that represents a compiled shader program.
  */
-export class ShaderProgram {
+export class ShaderProgram
+{
   private device: GPUDevice;
   private pipelineRegistry: Map<string, GPURenderPipeline>;
 
@@ -39,7 +48,8 @@ export class ShaderProgram {
    * @param module The compiled GPUShaderModule associated with this shader program.
    * @param desc The ShaderDescriptor that provides metadata about the shader program, including its name and entry points.
    */
-  constructor(device: GPUDevice, module: GPUShaderModule, desc: ShaderDescriptor) {
+  constructor(device: GPUDevice, module: GPUShaderModule, desc: ShaderDescriptor)
+  {
     this.device = device;
     this.module = module;
     this.name = desc.name;
@@ -53,7 +63,8 @@ export class ShaderProgram {
    * Retrieves a cached pipeline matching the requested state, or builds and caches a new pipeline if one does not exist for the given state.
    * @param state The PipelineState that describes the desired configuration for the rendering pipeline.
    */
-  public getPipeline(state: PipelineState): GPURenderPipeline {
+  public getPipeline(state: PipelineState): GPURenderPipeline
+  {
     const topology = state.topology ?? 'triangle-list';
     const cullMode = state.cullMode ?? 'none';
     const depthFormat = state.depthFormat ?? 'none';
@@ -107,9 +118,10 @@ export class ShaderProgram {
 /**
  * ShaderSystem class for managing shader modules in the engine.
  */
-export class ShaderSystem {
+export class ShaderSystem
+{
   private device: GPUDevice;
-  
+
   /**
    * Cache that stores compiled shader programs, keyed by their names.
    */
@@ -119,7 +131,8 @@ export class ShaderSystem {
    * ShaderSystem constructor, initializes the shader system with a GPU device and prepares the cache for shader programs.
    * @param device The GPU device used to create and manage shader programs.
    */
-  constructor(device: GPUDevice) {
+  constructor(device: GPUDevice)
+  {
     this.device = device;
     this.programs = new Map();
   }
@@ -129,7 +142,8 @@ export class ShaderSystem {
    * @param desc The ShaderDescriptor that provides metadata about the shader program, including its name and URL path.
    * @returns The loaded ShaderProgram if successful, otherwise null.
    */
-  public async load(desc: ShaderDescriptor): Promise<ShaderProgram | null> {
+  public async load(desc: ShaderDescriptor): Promise<ShaderProgram | null>
+  {
     if (this.programs.has(desc.name)) {
       console.log(`[ShaderSystem.load] Shader program '${desc.name}' is already cached.`);
       return this.programs.get(desc.name)!;
@@ -166,7 +180,8 @@ export class ShaderSystem {
    * @param name The name of the shader program to retrieve from the cache.
    * @returns The cached ShaderProgram if found, otherwise null.
    */
-  public get(name: string): ShaderProgram | null {
+  public get(name: string): ShaderProgram | null
+  {
     const program = this.programs.get(name);
 
     if (!program) {
@@ -181,7 +196,8 @@ export class ShaderSystem {
    * Clears cached shader programs. If a name is provided, it clears the specific shader program from the cache; otherwise, it clears all cached shader programs.
    * @param name Optional name of the shader program to clear from the cache. If not provided, all cached shader programs will be cleared.
    */
-  public clear(name?: string): void {
+  public clear(name?: string): void
+  {
     if (name) {
       console.log(`[ShaderSystem.clear] Clearing cached shader program '${name}'.`);
       this.programs.delete(name);
