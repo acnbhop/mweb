@@ -1,4 +1,4 @@
-import { ShaderSystem } from './shadersystem';
+import { ShaderSystem, ShaderProgram } from './shadersystem';
 
 /**
  * Renderer class.
@@ -9,9 +9,9 @@ export class Renderer {
   private device!: GPUDevice;
   private context!: GPUCanvasContext;
   private format!: GPUTextureFormat;
+  private activeProgram!: ShaderProgram;
 
   public shaderSystem!: ShaderSystem;
-  private pipeline!: GPURenderPipeline;
 
   /**
    * Renderer constructor, initializes the renderer with a canvas element.
@@ -66,33 +66,19 @@ export class Renderer {
 
     this.shaderSystem = new ShaderSystem(this.device);
 
-    const testShader = await this.shaderSystem.load('testShader', '/shaders/test.wgsl');
+    const program = await this.shaderSystem.load({
+      name: 'testShader',
+      urlPath: '/shaders/test.wgsl',
+      vertexEntryPoint: 'vs_main',
+      fragmentEntryPoint: 'fs_main',
+    })
 
-    if (!testShader) {
-      console.error('[Renderer.initialize] Failed to load the test shader.');
+    if (!program) {
+      console.error('[Renderer.initialize] Failed to load the test shader program.');
       return false;
     }
 
-    this.pipeline = device.createRenderPipeline({
-      label: 'Test Pipeline',
-      layout: 'auto',
-      vertex: {
-        module: testShader,
-        entryPoint: 'vs_main',
-      },
-      fragment: {
-        module: testShader,
-        entryPoint: 'fs_main',
-        targets: [
-          {
-            format: this.format
-          }
-        ],
-      },
-      primitive: {
-        topology: 'triangle-list',
-      },
-    });
+    this.activeProgram = program;
 
     console.log("[Renderer.initialize] Renderer initialized successfully.");
 
@@ -141,7 +127,14 @@ export class Renderer {
 
     // Begin pass, record commands and end the pass.
     const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
-    passEncoder.setPipeline(this.pipeline);
+
+    const pipeline = this.activeProgram.getPipeline({
+      format: this.format,
+      topology: 'triangle-list',
+      cullMode: 'none',
+    });
+
+    passEncoder.setPipeline(pipeline);
     passEncoder.draw(3);
     passEncoder.end();
 
