@@ -1,3 +1,8 @@
+import { ShaderSystem } from './shadersystem';
+
+/**
+ * Renderer class.
+ */
 export class Renderer {
   private canvas: HTMLCanvasElement;
   private adapter!: GPUAdapter;
@@ -5,10 +10,21 @@ export class Renderer {
   private context!: GPUCanvasContext;
   private format!: GPUTextureFormat;
 
+  public shaderSystem!: ShaderSystem;
+  private pipeline!: GPURenderPipeline;
+
+  /**
+   * Renderer constructor, initializes the renderer with a canvas element.
+   * @param canvas The HTML canvas element where the rendering will take place.
+   */
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
   }
 
+  /**
+   * Initializes the WebGPU renderer by requesting an adapter and device, and configuring the canvas context.
+   * @returns A promise that resolves to true if the renderer is initialized successfully, otherwise false.
+   */
   public async initialize(): Promise<boolean> {
     if (!navigator.gpu) {
       console.error('[Renderer.initialize] WebGPU not supported on this browser.');
@@ -48,11 +64,45 @@ export class Renderer {
       alphaMode: 'premultiplied',
     });
 
+    this.shaderSystem = new ShaderSystem(this.device);
+
+    const testShader = await this.shaderSystem.load('testShader', '/shaders/test.wgsl');
+
+    if (!testShader) {
+      console.error('[Renderer.initialize] Failed to load the test shader.');
+      return false;
+    }
+
+    this.pipeline = device.createRenderPipeline({
+      label: 'Test Pipeline',
+      layout: 'auto',
+      vertex: {
+        module: testShader,
+        entryPoint: 'vs_main',
+      },
+      fragment: {
+        module: testShader,
+        entryPoint: 'fs_main',
+        targets: [
+          {
+            format: this.format
+          }
+        ],
+      },
+      primitive: {
+        topology: 'triangle-list',
+      },
+    });
+
     console.log("[Renderer.initialize] Renderer initialized successfully.");
 
     return true;
   }
 
+  /**
+   * Draws a frame using the WebGPU device and context. If the device or context is not initialized, logs an error and returns early.
+   * @returns void
+   */
   public draw(): void {
     if (!this.device || !this.context) {
       // What is specifically missing?
@@ -91,6 +141,8 @@ export class Renderer {
 
     // Begin pass, record commands and end the pass.
     const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
+    passEncoder.setPipeline(this.pipeline);
+    passEncoder.draw(3);
     passEncoder.end();
 
     // Submit the recorded commands to the GPU queue.
